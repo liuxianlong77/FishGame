@@ -1,6 +1,4 @@
-#ifndef FS_MenuSelect_h
-#define FS_MenuSelect_h
-#include "Header.h"
+#progma once
 class SelectItem : public jai::MyNode
 {
     int mIndex;
