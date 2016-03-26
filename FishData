@@ -1,72 +1,35 @@
-//
-//  FishData.cpp
-//  CasinoGame2
-//
-//  Created by Lex on 16/3/14.
-//
-//
+#pragma once
 
-#include "FishData.hpp"
+#include "Header.h"
 
-#include "jai_csv.h"
-
-FishData::FishData()
+class FishData
 {
-	jai::SimpleCSV csv;
-	csv.importFromString(Lex::GetDataOfFile(Lex::GetResPath("text/fish.csv").data()));
-
-	auto & rows = csv.getRows();
-
-	for (auto & row : rows)
+	FishData();
+public:
+	struct Data
 	{
-		musts(row.size() == 16, "");
-		Data data;
-		int index = 0;
-		data.type = jai::StringToNumber<int>(row[index++]);
-		data.name = row[index++];
-		data.pay = jai::StringToNumber<int>(row[index++]);
-		data.payEx = jai::StringToNumber<int>(row[index++]);
-		data.group = jai::StringToNumber<int>(row[index++]);
-		data.groupEx = jai::StringToNumber<int>(row[index++]);
-		data.path_type = jai::StringToNumber<int>(row[index++]);
-		data.ani_normal = jai::StringToNumber<int>(row[index++]);
-		data.ani_dying = jai::StringToNumber<int>(row[index++]);
-		data.min_speed = jai::StringToNumber<int>(row[index++]);
-		data.max_speed = jai::StringToNumber<int>(row[index++]);
-		data.silver_coin = jai::StringToNumber<int>(row[index++]);
-		data.gold_coin = jai::StringToNumber<int>(row[index++]);
-		data.break_type = jai::StringToNumber<int>(row[index++]);
-		data.circle_type = jai::StringToNumber<int>(row[index++]);
-		data.rate = jai::StringToNumber<int>(row[index++]);
-		mData[data.type] = data;
-	}
-	int rateAcc = 0;
-	for (auto & x : mData)
-	{
-		rateAcc += x.second.rate;
-		mRateAcc.push_back(std::make_pair(x.first, rateAcc));
-	}
-	mRateAcc.push_back(std::make_pair(0, rateAcc));
-}
-
-int FishData::nextType()
-{
-	int n = LexRand(mRateAcc.back().second);
-	for (auto & x : mRateAcc)
-	{
-		if(n < x.second) return x.first;
-	}
-	return 0;
-}
-FishData * FishData::GetShared()
-{
-	static FishData * self = new FishData;
-	return self;
-}
-
-FishData::Data * FishData::getInfo(int type)
-{
-	auto iter = mData.find(type);
-	if(iter == mData.end()) return nullptr;
-	return &(iter->second);
-}
+		int type;
+		std::string name;
+		int pay;
+		int payEx;
+		int group;
+		int groupEx;
+		int path_type;
+		int ani_normal;
+		int ani_dying;
+		int min_speed;
+		int max_speed;
+		int silver_coin; // count
+		int gold_coin; // count
+		int break_type; // 0:none
+		int circle_type; // 0:none
+		int rate;
+	};
+	static FishData * GetShared();
+	Data * getInfo(int type);
+	std::map<int, Data> & getDatas() { return mData; }
+	int nextType();
+protected:
+	std::map<int, Data> mData;
+	std::vector<std::pair<int /* type */, int/*acc rate*/> > mRateAcc;
+};
